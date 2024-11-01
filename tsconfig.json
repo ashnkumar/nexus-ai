@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "ES5", // Use ES5 target for compatibility
+    "noEmit": true,
+    "noImplicitAny": false
+  },
+  "include": [
+    "contracts_near/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}
