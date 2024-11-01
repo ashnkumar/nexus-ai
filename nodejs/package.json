@@ -1,0 +1,33 @@
+{
+  "name": "nexus-bridge",
+  "version": "1.0.0",
+  "description": "Bridge server for Nexus federated learning system",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev src/server.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "near-api-js": "^2.1.4",
+    "@calimero-is-near/calimero-p2p-sdk": "^0.1.0",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "winston": "^3.11.0",
+    "envalid": "^7.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.10",
+    "@types/node": "^20.10.4",
+    "@types/cors": "^2.8.17",
+    "typescript": "^5.3.3",
+    "ts-node-dev": "^2.0.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "ts-jest": "^29.1.1"
+  }
+}
