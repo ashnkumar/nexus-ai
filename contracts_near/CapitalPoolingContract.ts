@@ -54,7 +54,56 @@ export class CapitalPoolingContract {
     near.log(`Contract initialized by owner: ${this.owner} with incentive contract: ${this.incentiveContract}`);
   }
 
-  // Rest of the functions remain the same until setPortfolioValues
+  @call({ payableFunction: true })
+  contributeCapital(): void {
+    const amount = near.attachedDeposit();
+    const traderAddress = near.predecessorAccountId();
+
+    near.log(`contributeCapital called by ${traderAddress} with amount ${amount.toString()}`);
+    assert(amount > BigInt(0), "Attached deposit must be greater than zero");
+
+    // Retrieve current balance
+    let balanceString = this.balances.get(traderAddress);
+    let currentBalance = balanceString ? BigInt(balanceString) : BigInt(0);
+    let newBalance = currentBalance + amount;
+
+    // Update balances
+    this.balances.set(traderAddress, newBalance.toString());
+
+    // Update totalCapital
+    this.totalCapital += amount;
+
+    // Add to participants
+    this.participants.set(traderAddress);
+
+    // Debugging logs
+    near.log(`New balance for ${traderAddress}: ${newBalance.toString()}`);
+    near.log(`Total capital is now: ${this.totalCapital.toString()}`);
+  }
+
+  @call({})
+  withdrawCapital({ amount }: { amount: string }): NearPromise {
+    const traderAddress = near.predecessorAccountId();
+    const withdrawalAmount = BigInt(amount);
+
+    near.log(`withdrawCapital called by ${traderAddress} for amount ${withdrawalAmount.toString()}`);
+    assert(withdrawalAmount > BigInt(0), "Withdrawal amount must be greater than zero");
+
+    let balanceString = this.balances.get(traderAddress);
+    let balance = balanceString ? BigInt(balanceString) : BigInt(0);
+    assert(balance >= withdrawalAmount, "Insufficient balance");
+
+    // Update trader's balance and total capital
+    const newBalance = balance - withdrawalAmount;
+    this.balances.set(traderAddress, newBalance.toString());
+    this.totalCapital -= withdrawalAmount;
+
+    near.log(`New balance for ${traderAddress}: ${newBalance.toString()}`);
+    near.log(`Total capital is now: ${this.totalCapital.toString()}`);
+
+    // Transfer NEAR tokens back to the trader
+    return NearPromise.new(traderAddress).transfer(withdrawalAmount);
+  }
 
   @call({})
   setPortfolioValues({ initialValue, finalValue }: { initialValue: string; finalValue: string }): NearPromise {
@@ -89,9 +138,6 @@ export class CapitalPoolingContract {
 
     return NearPromise.new(this.owner);
   }
-
-  // Rest of the functions remain the same
-}
 
 
   @view({})
